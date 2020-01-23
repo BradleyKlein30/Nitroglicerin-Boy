@@ -20,6 +20,8 @@ public class Timer : MonoBehaviour
     public RawImage goldMedal;
     public RawImage silverMedal;
     public RawImage bronzeMedal;
+    public GameObject retryButton;
+    public GameObject exitToHUBButton;
 
     private float startTime;
     private bool finished = false;
@@ -60,8 +62,13 @@ public class Timer : MonoBehaviour
     public void Win()
     {
         pointer.enabled = false;
+        exitToHUBButton.SetActive(true);
+        retryButton.SetActive(true);
+        GameObject.Find("First Person Player/Main Camera").GetComponent<MouseLook>().enabled = false;
+        GameObject.Find("First Person Player/Main Camera/Right Arm").GetComponent<ProyectileSpawner>().enabled = false;
+        Cursor.lockState = CursorLockMode.None;
 
-        if((seconds <= goldSeconds))
+        if ((seconds <= goldSeconds))
         {
             Debug.Log("Gold Medal");
             goldMedal.enabled = true;
