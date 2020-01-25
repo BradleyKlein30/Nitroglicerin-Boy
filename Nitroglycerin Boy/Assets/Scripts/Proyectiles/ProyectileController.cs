@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(AudioSource))]
 public class ProyectileController : MonoBehaviour
@@ -11,17 +12,9 @@ public class ProyectileController : MonoBehaviour
 
     public GameObject explosionEffect;
 
-    [Header("AUDIOCLIPS")]
-    public AudioClip explosionSound;
-
-    [Header("COMPONENTS")]
-    public GameObject door;
-    public AudioSource audio;
-
     void Start()
     {
         Invoke("Destroy", bulletLifeTime);
-        audio = GetComponent<AudioSource>();
     }
 
     void Update()
@@ -34,27 +27,27 @@ public class ProyectileController : MonoBehaviour
         Destroy(gameObject);
     }
 
-    private void PlayExplosionSound()
-    {
-        audio.clip = explosionSound;
-        audio.Play();
-    }
-
     void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.tag == "CanExplode")
         {
-            Instantiate(explosionEffect, transform.position, transform.rotation);
-            PlayExplosionSound();
+            GameObject explosion = Instantiate(explosionEffect, transform.position, transform.rotation);
             Destroy(collision.gameObject);
             Destroy(gameObject);
+            Destroy(explosion, 2);
         }
 
         if (collision.gameObject.layer == 9)
         {
-            Instantiate(explosionEffect, transform.position, transform.rotation);
-            PlayExplosionSound();
+            GameObject explosion = Instantiate(explosionEffect, transform.position, transform.rotation);
             Destroy(gameObject);
+            Destroy(explosion, 2);
+        }
+
+        if (collision.gameObject.tag == "Player")
+        {
+            Debug.Log("Game Over");
+            Scene scene = SceneManager.GetActiveScene(); SceneManager.LoadScene(scene.name);
         }
 
     }

@@ -34,27 +34,27 @@ public class PlayerController : MonoBehaviour
     public bool canDash;
     public bool isDashing;
 
-    public bool stepping = false;
-
     [Header("GROUNDED")]
     public Transform groundCheck;
     public float groundDistance = 0.4f;
     public LayerMask groundMask;
 
     [Header("AUDIOCLIPS")]
+    public AudioClip footstepSound;
     public AudioClip jumpSound;           // the sound played when character leaves the ground.
     public AudioClip landSound;           // the sound played when character touches back on ground.
-    public AudioClip explosionSound;
 
     [Header ("COMPONENTS")]
     public GameObject explosionEffect;
     public CharacterController cc;
     public AudioSource audio;
+    public Animator anim;
 
     public void Start()
     {
         cc = GetComponent<CharacterController>();
         audio = GetComponent<AudioSource>();
+        anim = GetComponent<Animator>();
 
         amountOfDashesLeft = amountOfDashes;
     }
@@ -89,9 +89,13 @@ public class PlayerController : MonoBehaviour
     public void Move()
     {
         move = transform.right * x + transform.forward * z;
-       
-
         cc.Move(move * speed * Time.deltaTime);
+
+        if (((x != 0) || (z != 0)) && isGrounded)
+        {
+            anim.SetBool("Walk", true);
+        }
+        else anim.SetBool("Walk", false);
     }
 
     public void Gravity()
@@ -161,6 +165,13 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    private void PlayFootstepSound()
+    {
+        audio.clip = footstepSound;
+        audio.pitch = (UnityEngine.Random.Range(0.5f, 1f));
+        audio.Play();
+    }
+
     private void PlayLandingSound()
     {
         audio.clip = landSound;
@@ -171,12 +182,7 @@ public class PlayerController : MonoBehaviour
     {
         audio.clip = jumpSound;
         audio.Play();
-    }
-
-    private void PlayExplosionSound()
-    {
-        audio.clip = explosionSound;
-        audio.Play();
+        audio.pitch = 1;
     }
 
     private void OnDrawGizmos()

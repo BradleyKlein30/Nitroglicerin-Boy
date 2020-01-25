@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-
+[RequireComponent(typeof(AudioSource))]
 public class Timer : MonoBehaviour
 {
     [Header("Text")]
@@ -11,11 +11,10 @@ public class Timer : MonoBehaviour
     private char characterSplitter = ':';
 
     [Header("Time Variables")]
-    public float goldSeconds;
-    public float silverSecondsMin;
-    public float silverMinutesMax;
-    public float bronzeMinutesMin;
+    public float goldSecondsLimit;
+    public float silverSecondsLimit;
 
+    [Header("UI")]
     public Image pointer;
     public RawImage goldMedal;
     public RawImage silverMedal;
@@ -31,10 +30,18 @@ public class Timer : MonoBehaviour
     private float minutes;
     private float hours;
 
+    [Header("AUDIOCLIPS")]
+    public AudioClip victory;
+
+    [Header("COMPONENTS")]
+    public AudioSource audio;
+
+
     // Start is called before the first frame update
     void Start()
     {
         startTime = Time.time;
+        audio = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -43,10 +50,10 @@ public class Timer : MonoBehaviour
         if (finished) return;
 
         t = Time.time - startTime;
-        seconds = (t % 60);
-        minutes = ((int)(t / 60) % 60);
+        seconds = (int)(t % 60);
+        minutes = (int)(t / 60) % 60;
         hours = (int)(t / 3600);
-
+        
         timerText.text
             = hours.ToString("00") + characterSplitter
             + minutes.ToString("00") + characterSplitter
@@ -68,22 +75,29 @@ public class Timer : MonoBehaviour
         GameObject.Find("First Person Player/Main Camera/Right Arm").GetComponent<ProyectileSpawner>().enabled = false;
         Cursor.lockState = CursorLockMode.None;
 
-        if ((seconds <= goldSeconds))
+        if ((t <= goldSecondsLimit))
         {
             Debug.Log("Gold Medal");
             goldMedal.enabled = true;
+            audio.clip = victory;
+            audio.pitch = 2;
+            audio.Play();
         }
-
-        if ((minutes < silverMinutesMax) && (seconds > silverSecondsMin))
+        if ((t <= silverSecondsLimit) && (t > goldSecondsLimit))
         {
             Debug.Log("Silver Medal");
             silverMedal.enabled = true;
+            audio.clip = victory;
+            audio.pitch = 1;
+            audio.Play();
         }
-
-        if ((minutes >= bronzeMinutesMin))
+        if ((t >= (silverSecondsLimit + 1)))
         {
             Debug.Log("Bronze Medal");
             bronzeMedal.enabled = true;
+            audio.clip = victory;
+            audio.pitch = 0.5f;
+            audio.Play();
         }
     }
 }

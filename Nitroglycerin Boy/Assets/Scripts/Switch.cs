@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class Switch : MonoBehaviour
 {
+    [Header("AUDIOCLIPS")]
+    public AudioClip doorSound;
+
     [Header("COMPONENTS")]
     public GameObject door;
     public AudioSource audio;
@@ -27,6 +30,13 @@ public class Switch : MonoBehaviour
         if (other.gameObject.tag == "Proyectile")
         {
             doorAnim.SetBool("Open", true);
+            DoorSound();
         }
+    }
+
+    private void DoorSound()
+    {
+        audio.clip = doorSound;
+        audio.Play();
     }
 }

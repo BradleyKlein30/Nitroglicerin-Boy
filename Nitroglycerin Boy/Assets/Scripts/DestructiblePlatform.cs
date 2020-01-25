@@ -14,8 +14,11 @@ public class DestructiblePlatform : MonoBehaviour
     }
     public void OnTriggerEnter(Collider other)
     {
-        Destroy(gameObject, destroyTime);
-        StartCoroutine(Gravity(gravityTime));
+        if (other.gameObject.tag == "Player")
+        {
+            Destroy(gameObject, destroyTime);
+            StartCoroutine(Gravity(gravityTime));
+        }
     }
 
     private IEnumerator Gravity(float waitTime)
